@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Video Conference</title>
+  <link rel="stylesheet" href="{% static 'css/ff.css' %}">
+  <body>
+    <style>
+  
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+body {
+  background-image: url('{% static 'images/s.png'  %}');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 140% 100%;
+}
+.try{
+  opacity:0.8
+ }
+
+/* center the div named dashboard */
+.dashboard {
+  margin: auto;
+  width: 100%;
+  padding: 10px;
+  color: white;
+}
+
+/** align the text inside the div named dashboard to the center */
+.dashboard h1 {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.dashboard a {
+  background-color: azure;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.dashboard a {
+  margin-top: 7px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.dashboard a:hover {
+  background-color: #f0baed;
+}
+
+.dashboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.a{
+  margin-right: 630px;
+  margin-top: 130px;
+  opacity: 0.7;
+}
+    </style>
+    <div class="dashboard try" style=" position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <h1>Welcome, {{request.user.username}} to our Heads-up group therapy !</h1>
+        <!-- create a "New Meeting" button -->
+        <div class="a">
+        <a href="{% url 'meeting' %}" class="button" s>New Session</a>
+        <a href="{% url 'join' %}" class="button">Join Session</a>
+        <a href="/" class="button">Goback to home</a>
+      </div>
+      </div>
+  </body>
+</head>
+</html>

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        {% autoescape off %}
+            {{ diary.content }}
+        {% endautoescape %}
+    </div>
+
+
+{% endblock %}
