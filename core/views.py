@@ -80,7 +80,7 @@ def index(request):
    # print(user_following_all)
 
 
-    return render(request,'index.html',{'liked_posts': liked_posts,'user_following_all':user_following_all, 'user_profile': user_profile, 'posts':feed_list, 'suggestions_username_profile_list': suggestions_username_profile_list[:4],'totalentry':total}, )
+    return render(request,'inde.html',{'liked_posts': liked_posts,'user_following_all':user_following_all, 'user_profile': user_profile, 'posts':feed_list, 'suggestions_username_profile_list': suggestions_username_profile_list[:4],'totalentry':total}, )
 
 @login_required(login_url='signin')
 def submitreport(request):
@@ -183,7 +183,7 @@ def guest(request):
               return response
          else:
              idd=request.COOKIES['unique_id']
-             return render(request,'index.html',{'idd':idd[-5:]})
+             return render(request,'inde.html',{'idd':idd[-5:]})
        
           
         
