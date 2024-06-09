@@ -1,3 +1,11 @@
+# from pyngrok import ngrok
+# ngrok.set_auth_token("2dtRnu602k8tHrUYAeyOptndb3z_4h354U1p4GmBBZVMFxMs9")
+
+# # Expose Django development server using Ngrok
+# public_url = ngrok.connect(8000)
+
+# # Print Ngrok URL to the console
+# print("Ngrok URL:", public_url)
 """
 Django settings for social_book project.
 
@@ -26,7 +34,7 @@ SECRET_KEY = 'django-insecure-y6on4&^y1+^c$5_h4eh-i2fz-c6jmagos9$5b!o!%8=08s#!tm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','192.168.1.83']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','192.168.1.83','.ngrok-free.app','*','026a-2409-4073-2ec6-df2a-b03b-dbe1-e249-fc49.ngrok-free.app','3e6d-2409-4073-4d31-bd02-690e-98b3-3963-ecd5.ngrok-free.app']
 
 
 # Application definition
@@ -38,10 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core'
+    'core',
+    'corsheaders',
+
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://026a-2409-4073-2ec6-df2a-b03b-dbe1-e249-fc49.ngrok-free.app']
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,9 +62,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_COOKIE_SECURE = True 
+CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'social_book.urls'
-
+CORS_ALLOWED_ORIGINS = [
+    'https://026a-2409-4073-2ec6-df2a-b03b-dbe1-e249-fc49.ngrok-free.app',
+    # Add other allowed origins if needed
+]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -108,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

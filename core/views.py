@@ -3,84 +3,119 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Profile, Post, LikePost, FollowersCount,Likedby,Comment,DiaryModel,ReportModel
+from .models import Profile, Post, LikePost, FollowersCount,Likedby,Comment,DiaryModel,ReportModel,Suicidal
 from itertools import chain
 from .forms import AddForm
 from datetime import datetime
 import random
+from django.utils import timezone
+import threading
 import uuid
 from django.http import HttpResponse,JsonResponse
+from .suic import preds
+import time
+from datetime import timedelta
+from .ab import score_comment2
 # Create your views here.
 
 @login_required(login_url='signin')
 def index(request):  
-   
-    liked_posts = Post.objects.filter(likedby=request.user)
-    total_entries=DiaryModel.objects.filter(user=request.user)
-    total=len(total_entries)
-    user_object = User.objects.get(username=request.user.username)
-    user_following_list = []
-    feed = []
-    user_profile = Profile.objects.get(user=user_object)
-    user_following_list = []
-    feed = []
-    
-    user_following = FollowersCount.objects.filter(follower=request.user.username)
-    for users in user_following:
-        user_following_list.append(users.user)
-
-    for usernames in user_following_list:
-        feed_lists = Post.objects.filter(user=usernames)
-        
-        feed.append(feed_lists)
-
-    if len(user_following_list)>0:
-  
-        ourlist=Post.objects.filter(user=request.user.username)      
-        feed.append(ourlist)   
-        
-       
-                  
-        feed_list = list(chain(*feed))
-        
-        #liked_usernames = [user_profile.username for user_profile in feed_list.likedby.all()]
-        #print(liked_usernames)
-      
+    user = request.user
+    user_profile = Profile.objects.get(user=user)
+    if user_profile.is_banned():
+            ban_until = user_profile.ban_until
+            ban_reason = user_profile.ban_reason
+            last_toxic_comment = user_profile.last_toxic_comment
+            print(last_toxic_comment)
+            last_toxicity_status = user_profile.last_toxicity_status
+            last_toxic_comment_post=user_profile.last_toxic_comment_post
+            context = {
+                'ban_until': ban_until,
+                'ban_reason': ban_reason,
+                'last_toxic_comment': last_toxic_comment,
+                'last_toxicity_status': last_toxicity_status,
+                'last_toxic_comment_post':last_toxic_comment_post
+            }
+            return render(request,'ban_page.html', context)
     else:
-   
-        feed_lists=Post.objects.all()
-        feed.append(feed_lists)
-        feed_list = list(chain(*feed))
-  
-   
-    # user suggestion starts
-    all_users = User.objects.all()
-    user_following_all = []
+        suicidal_obj = Suicidal.objects.filter(user=user).first()
+        if suicidal_obj:
+            return render(request, 'prevention_info.html')
+        else:         
+            liked_posts = Post.objects.filter(likedby=request.user)
+            total_entries=DiaryModel.objects.filter(user=request.user)
+            total=len(total_entries)
+            user_object = User.objects.get(username=request.user.username)
+            user_following_list = []
+            feed = []
+            user_profile = Profile.objects.get(user=user_object)
+            user_following_list = []
+            feed = [] 
+            user_following = FollowersCount.objects.filter(follower=request.user.username)
+            for users in user_following:
+                user_following_list.append(users.user)
+            for usernames in user_following_list:
+                feed_lists = Post.objects.filter(user=usernames)       
+                feed.append(feed_lists)
+            if len(user_following_list)>0:
+                ourlist=Post.objects.filter(user=request.user.username)      
+                feed.append(ourlist)   
+                
+            
+                        
+                feed_list = list(chain(*feed))
+                
+                #liked_usernames = [user_profile.username for user_profile in feed_list.likedby.all()]
+                #print(liked_usernames)
+            
+            else:
+        
+                feed_lists=Post.objects.all()
+                feed.append(feed_lists)
+                feed_list = list(chain(*feed))
+        
+        
+            # user suggestion starts
+            all_users = User.objects.all()
+            user_following_all = []
 
-    for user in user_following:
-        user_list = User.objects.get(username=user.user)
-        user_following_all.append(user_list)
-    
-    new_suggestions_list = [x for x in list(all_users) if (x not in list(user_following_all))]
-    current_user = User.objects.filter(username=request.user.username)
-    final_suggestions_list = [x for x in list(new_suggestions_list) if ( x not in list(current_user))]
-    random.shuffle(final_suggestions_list)
+            for user in user_following:
+                user_list = User.objects.get(username=user.user)
+                user_following_all.append(user_list)
+            
+            new_suggestions_list = [x for x in list(all_users) if (x not in list(user_following_all))]
+            current_user = User.objects.filter(username=request.user.username)
+            final_suggestions_list = [x for x in list(new_suggestions_list) if ( x not in list(current_user))]
+            random.shuffle(final_suggestions_list)
 
-    username_profile = []
-    username_profile_list = []
+            username_profile = []
+            username_profile_list = []
 
-    for users in final_suggestions_list:
-        username_profile.append(users.id)
+            for users in final_suggestions_list:
+                username_profile.append(users.id)
 
-    for ids in username_profile:
-        profile_lists = Profile.objects.filter(id_user=ids)
-        username_profile_list.append(profile_lists)
+            for ids in username_profile:
+                profile_lists = Profile.objects.filter(id_user=ids)
+                username_profile_list.append(profile_lists)
 
-    suggestions_username_profile_list = list(chain(*username_profile_list))
-   # print(user_following_all)
+            suggestions_username_profile_list = list(chain(*username_profile_list))
+        # print(user_following_all)
 
 
-    return render(request,'inde.html',{'liked_posts': liked_posts,'user_following_all':user_following_all, 'user_profile': user_profile, 'posts':feed_list, 'suggestions_username_profile_list': suggestions_username_profile_list[:4],'totalentry':total}, )
+            return render(request,'inde.html',{'liked_posts': liked_posts,'user_following_all':user_following_all, 'user_profile': user_profile, 'posts':feed_list, 'suggestions_username_profile_list': suggestions_username_profile_list[:4],'totalentry':total}, )
+
+
+def delete_suicidal(request):
+    user = request.user
+    suicidal_obj = Suicidal.objects.filter(user=user).first()
+    if suicidal_obj:
+        # If the Suicidal object exists, delete it
+        suicidal_obj.delete()
+    # Redirect back to the index page or any other desired page
+    return redirect('index')
+
+
+
 
 @login_required(login_url='signin')
 def submitreport(request):
@@ -94,9 +129,44 @@ def submitreport(request):
         return redirect('/')
 
 
+def ban_user(user,toxicity_status,post):
+    print(toxicity_status)
+    print(type(toxicity_status))
+    user_profile = Profile.objects.get(user=user)
+    ban_duration = timedelta(minutes=5)
+    ban_until = timezone.localtime(timezone.now())+ ban_duration
+    print(ban_until)
+    # Represent hour 0 as 24 in 24-hour clock format
+    user_profile.ban_until = ban_until
+    # ban_duration = timedelta(minutes=5)  # Set ban duration to 5 minutes
+    # user_profile.ban_until = timezone.now() + ban_duration
+    user_profile.ban_reason = "comment found toxic"
+    user_profile.last_toxic_comment_post = post
+    user_profile.save()
+    print("done banned")
+
+
+def toxicity_detection_worker(content, user,post,uii):
+    # Perform toxicity detection
+    toxicity_status = score_comment2(content)
+    print(toxicity_status)
+    user_profile = Profile.objects.get(user=user)
+    user_profile.last_toxic_comment = None
+   
+    user_profile.save()
+    if toxicity_status!='good':
+        print("helloworld")
+        # If comment is toxic, update last_toxic_comment
+       # comment = Comment.objects.filter(user=user).order_by('-created_at').first()
+        user_profile.last_toxicity_status = toxicity_status
+        user_profile.last_toxic_comment = content
+        user_profile.save()
+        comment = Comment.objects.get(uid=uii)
+        comment.delete()
+        ban_user(user,toxicity_status,post)
+
 def add_comment(request):
     #post = Post.objects.get(pk=post_id)
-
     if request.method == 'POST':
         #print(req) 
         idd = request.POST.get('post_id', 'None') 
@@ -105,17 +175,20 @@ def add_comment(request):
         #print(request_getdata)
         print(idd)
         post = Post.objects.get(id=idd)
-                
         content = request.POST.get('comment')
+        user = request.user
+        #new addds of comment toxicity
         comment = Comment.objects.create(user=request.user, content=content)
+        print(comment.uid)
         post.comments.add(comment)
+        detection_thread = threading.Thread(target=toxicity_detection_worker, args=(content, user,post,comment.uid))
+        detection_thread.start()
 
         data={
             'id':idd,
             'comment':content,
             'username':request.user.username,
-            'time'    :comment.created_at
-            
+            'time'    :comment.created_at      
         }
         return JsonResponse(data=data)
 
@@ -277,14 +350,17 @@ def profile(request, pk):
 
 @login_required(login_url='signin')
 def upload(request):
-
     if request.method == 'POST':
         user = request.user.username
         image = request.FILES.get('image_upload')
         caption = request.POST['caption']
         new_post = Post.objects.create(user=user, image=image, caption=caption)
         new_post.save()
+        print("---------------------") 
         messages.info(request, 'post uploaded')
+        thread1 = threading.Thread(target=preds, args=(caption,request.user))
+        thread1.start()
+        
         return redirect('/')
     else:
         return redirect('/')

@@ -19,6 +19,7 @@ urlpatterns = [
     path('join', views.join_room, name='join'),
     #path('articles', views.articles, name='articles'),
     path('diary', views.entry, name='diary'),
+    path('delete-suicidal', views.delete_suicidal, name='delete_suicidal'),
     path('show', views.show, name='show'),
     path('submitreport', views.submitreport, name='submitreport'),
     path('show/<int:diary_id>', views.detail, name='detail'),

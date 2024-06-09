@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suicide Prevention Information</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    h1 {
+        color: #333;
+    }
+    
+    p {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    ul {
+        color: #666;
+    }
+    
+    strong {
+        color: #cc0000;
+    }
+    
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+    
+    button:hover {
+        background-color: #0056b3;
+    }
+    
+    a {
+        text-decoration: none;
+        color: #007bff;
+    }
+    
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+<body>
+    <div class="container">
+        
+            <h1>Suicide Prevention Information</h1>
+            <p>
+                If you or someone you know is struggling with thoughts of suicide, it's important to seek help immediately. You are not alone, and there are people who care about you and want to help.
+            </p>
+            <p>
+                Here are some steps you can take to prevent suicide:
+            </p>
+            <ul>
+                <li>Reach out to a trusted friend or family member.</li>
+                <li>Contact a mental health professional or counselor.</li>
+                <li>Call a suicide prevention hotline.</li>
+                <li>Seek emergency medical assistance if necessary.</li>
+            </ul>
+            <p>
+                Remember, it's okay to ask for help, and there are resources available to support you.
+            </p>
+            <p>
+                If you need immediate assistance, please call the National Suicide Prevention Lifeline at <strong>1-800-273-TALK (8255)</strong>.
+            </p>
+            <a href="{% url 'delete_suicidal' %}"><button>Go Back</button></a>
+        
+        
+    </div>
+</body>
+</html>
